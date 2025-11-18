@@ -698,6 +698,68 @@
                                 @lang('admin::app.sales.orders.view.payment-method')
                             </p>
 
+                            <!-- OCPay status polling button -->
+                            @if ($order->payment->method === 'ocpay_cib')
+                                <div class="mt-4 p-4 bg-blue-50 dark:bg-gray-800 rounded">
+                                    <p class="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">OCPay Payment</p>
+                                    <button type="button" onclick="checkOCPayStatus()" class="primary-button">
+                                        🔄 Check Payment Status
+                                    </button>
+                                    <div id="ocpay-status-result" class="mt-2 text-sm font-semibold"></div>
+                                </div>
+                                <script>
+                                    function checkOCPayStatus() {
+                                        alert('Button clicked! Checking status...');
+                                        console.log('=== OCPay Status Check Started ===');
+                                        
+                                        const resultDiv = document.getElementById('ocpay-status-result');
+                                        resultDiv.textContent = '⏳ Checking...';
+                                        resultDiv.className = 'mt-2 text-sm font-semibold text-blue-600';
+                                        
+                                        const url = '{{ route('admin.ocpay.status', $order->id) }}';
+                                        const token = '{{ csrf_token() }}';
+                                        
+                                        console.log('URL:', url);
+                                        console.log('Token:', token);
+                                        
+                                        fetch(url, {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': token,
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json',
+                                            },
+                                        })
+                                        .then(response => {
+                                            console.log('Response status:', response.status);
+                                            if (!response.ok) {
+                                                throw new Error('HTTP ' + response.status);
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            console.log('=== OCPay Response ===', data);
+                                            let msg = data.status ? ('✅ Status: ' + data.status) : ('❌ Error: ' + (data.message || 'Unknown error'));
+                                            resultDiv.textContent = msg;
+                                            resultDiv.className = 'mt-2 text-sm font-semibold ' + (data.status ? 'text-green-600' : 'text-red-600');
+                                            
+                                            alert('OCPay Status:\n\n' + JSON.stringify(data, null, 2));
+                                            
+                                            if (data.status === 'CONFIRMED') {
+                                                alert('Payment confirmed! Reloading page...');
+                                                setTimeout(() => location.reload(), 1000);
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('=== Fetch Error ===', error);
+                                            resultDiv.textContent = '❌ Error: ' + error.message;
+                                            resultDiv.className = 'mt-2 text-sm font-semibold text-red-600';
+                                            alert('Error:\n\n' + error.message);
+                                        });
+                                    }
+                                </script>
+                            @endif
+
                             <!-- Currency -->
                             <p class="pt-4 font-semibold text-gray-800 dark:text-white">
                                 {{ $order->order_currency_code }}

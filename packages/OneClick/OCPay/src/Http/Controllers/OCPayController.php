@@ -95,6 +95,11 @@ class OCPayController extends BaseController
                 $data = (new OrderResource($cart))->jsonSerialize();
                 $order = $this->orderRepository->create($data);
 
+                // Save payment reference in order payment additional field
+                $order->payment->update([
+                    'additional' => ['paymentRef' => $paymentRef],
+                ]);
+
                 Cart::deActivateCart();
 
                 session()->forget('ocpay.payment_ref');

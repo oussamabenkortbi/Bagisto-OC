@@ -57,12 +57,14 @@ class VatValidator
         [$country, $number] = $this->splitVat($vatNumber);
 
         if (! isset(self::$pattern_expression[$country])) {
-            if (! $formCountry) {
-                return false;
+            if ($formCountry && isset(self::$pattern_expression[$formCountry])) {
+                $country = $formCountry;
+                $number = $vatNumber;
+            } else {
+                // No known pattern for the detected or provided country.
+                // Gracefully skip strict validation for non-supported countries.
+                return true;
             }
-
-            $country = $formCountry;
-            $number = $vatNumber;
         }
 
         return preg_match('/^'.self::$pattern_expression[$country].'$/', $number) > 0;
