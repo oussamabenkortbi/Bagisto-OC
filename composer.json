@@ -37,6 +37,7 @@
         "maatwebsite/excel": "^3.1.46",
         "mpdf/mpdf": "^8.2",
         "nesbot/carbon": "^2.72.2",
+        "oneclickdz/ocpay-php-sdk": "^1.0",
         "openai-php/laravel": "^0.10.1",
         "paypal/paypal-checkout-sdk": "1.0.1",
         "predis/predis": "^2.2",
@@ -95,7 +96,8 @@
             "Webkul\\SocialShare\\": "packages/Webkul/SocialShare/src",
             "Webkul\\Tax\\": "packages/Webkul/Tax/src",
             "Webkul\\Theme\\": "packages/Webkul/Theme/src",
-            "Webkul\\User\\": "packages/Webkul/User/src"
+            "Webkul\\User\\": "packages/Webkul/User/src",
+            "OneClick\\OCPay\\": "packages/OneClick/OCPay/src"
         }
     },
     "autoload-dev": {
